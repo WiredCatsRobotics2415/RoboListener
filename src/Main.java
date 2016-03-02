@@ -60,28 +60,29 @@ public class Main {
 			for (Iterator<MatOfPoint> iterator = contours.iterator(); iterator.hasNext();) {
 				MatOfPoint matOfPoint = (MatOfPoint) iterator.next();
 				Rect rec = Imgproc.boundingRect(matOfPoint);
-					if(rec.height < 25 || rec.width < 25){
-						iterator.remove();
+				if(rec.height < 25 || rec.width < 25){
+					iterator.remove();
 					continue;
-					}
-					float aspect = (float)rec.width/(float)rec.height;
-					if(aspect < 1.0)
-						iterator.remove();
 				}
-				for(MatOfPoint mop : contours){
+				float aspect = (float)rec.width/(float)rec.height;
+				if(aspect < 1.0)
+					iterator.remove();
+			}
+			
+			for(MatOfPoint mop : contours){
 					Rect rec = Imgproc.boundingRect(mop);
 					Imgproc.rectangle(matOriginal, rec.br(), rec.tl(), BLACK);
 			}
-//				if there is only 1 target, then we have found the target we want
+			
+			//if there is only 1 target, then we have found the target we want
 			if(contours.size() == 1){
 				Rect rec = Imgproc.boundingRect(contours.get(0));
-				
 				double goalCenterX = rec.br().x - (rec.width/2);
 				double goalCenterY = rec.tl().y - (rec.height/2);
 				error = Math.sqrt((Math.pow(goalCenterX,2)-Math.pow(SCREEN_CENTER_X,2)) + 
 						(Math.pow(goalCenterY,2)-Math.pow(SCREEN_CENTER_Y,2)));
 			}
-			
+				
 			DataOutputStream out = new DataOutputStream(client.getOutputStream());
 			out.writeDouble(error);
 			client.close();
